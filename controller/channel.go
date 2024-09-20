@@ -66,7 +66,13 @@ func AddChannel(c *gin.Context) {
 		return
 	}
 	channel.CreatedTime = utils.GetTimestamp()
-	keys := strings.Split(channel.Key, "\n")
+
+	keys := []string{}
+	if channel.Key == "" {
+		keys = append(keys, "")
+	} else {
+		keys = strings.Split(channel.Key, "\n")
+	}
 
 	baseUrls := []string{}
 	if channel.BaseURL != nil && *channel.BaseURL != "" {
@@ -74,7 +80,7 @@ func AddChannel(c *gin.Context) {
 	}
 	channels := make([]model.Channel, 0, len(keys))
 	for index, key := range keys {
-		if key == "" {
+		if len(keys) > 1 && key == "" {
 			continue
 		}
 		localChannel := channel

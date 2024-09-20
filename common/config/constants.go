@@ -203,6 +203,7 @@ const (
 	ChannelTypeJina           = 47
 	ChannelTypeRerank         = 48
 	ChannelTypeGithub         = 49
+	ChannelTypeGeneralProxy   = 50
 )
 
 var ChannelBaseURLs = []string{

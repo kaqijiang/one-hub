@@ -169,6 +169,13 @@ func MjAuth() func(c *gin.Context) {
 	}
 }
 
+func GeneralAuth() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		key := c.Request.Header.Get("Authorization")
+		tokenAuth(c, key)
+	}
+}
+
 func SpecifiedChannel() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		channelId := c.GetInt("specific_channel_id")

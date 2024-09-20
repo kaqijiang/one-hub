@@ -13,7 +13,8 @@ const defaultConfig = {
     plugin: {},
     tag: '',
     only_chat: false,
-    pre_cost: 1
+    pre_cost: 1,
+    general_proxy: false
   },
   inputLabel: {
     name: '渠道名称',
@@ -465,6 +466,22 @@ const typeConfig = {
       base_url: 'https://models.inference.ai.azure.com'
     },
     modelGroup: 'Github'
+  },
+  50: {
+    inputLabel: {
+      general_proxy: true,
+      key: 'Authorized需要的参数'
+    },
+    input: {
+      models: ['general-proxy'],
+      key: ''
+    },
+    prompt: {
+      base_url: '必填，请输入目标API地址，例如通过cloudflare中转',
+      models: '通用代理渠道model，用来区分不同的渠道API地址',
+      key: '(选填)header头中Authorized需要的的参数'
+    },
+    modelGroup: 'GeneralProxy'
   }
 };
 

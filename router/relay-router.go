@@ -18,6 +18,8 @@ func SetRelayRouter(router *gin.Engine) {
 	setSunoRouter(router)
 	setClaudeRouter(router)
 	setGeminiRouter(router)
+	// 添加通用代理路由
+	setGeneralProxyRouter(router)
 }
 
 func setOpenAIRouter(router *gin.Engine) {
@@ -117,5 +119,12 @@ func setGeminiRouter(router *gin.Engine) {
 	relayV1Router.Use(middleware.RelayGeminiPanicRecover(), middleware.GeminiAuth(), middleware.Distribute())
 	{
 		relayV1Router.POST("/models/:model", relay.RelaycGeminiOnly)
+	}
+}
+func setGeneralProxyRouter(router *gin.Engine) {
+	generalRouter := router.Group("/generalProxy")
+	generalRouter.Use(middleware.RelayPanicRecover(), middleware.GeneralAuth(), middleware.Distribute())
+	{
+		generalRouter.Any("/*path", relay.GeneralProxyRelay)
 	}
 }

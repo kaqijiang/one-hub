@@ -51,14 +51,18 @@ const getValidationSchema = (t) =>
     // is_tag: Yup.boolean(),
     name: Yup.string().required(t('channel_edit.requiredName')),
     type: Yup.number().required(t('channel_edit.requiredChannel')),
-    key: Yup.string().when('is_edit', { is: false, then: Yup.string().required(t('channel_edit.requiredKey')) }),
+    key: Yup.string().when(['is_edit', 'type'], {
+      is: (is_edit, type) => !is_edit && type !== 50,
+      then: Yup.string().required(t('channel_edit.requiredKey'))
+    }),
+
     other: Yup.string(),
     proxy: Yup.string(),
     test_model: Yup.string(),
     models: Yup.array().min(1, t('channel_edit.requiredModels')),
     groups: Yup.array().min(1, t('channel_edit.requiredGroup')),
     base_url: Yup.string().when('type', {
-      is: (value) => [3, 8].includes(value),
+      is: (value) => [3, 8, 50].includes(value),
       then: Yup.string().required(t('channel_edit.requiredBaseUrl')), // base_url 是必需的
       otherwise: Yup.string() // 在其他情况下，base_url 可以是任意字符串
     }),
@@ -603,43 +607,46 @@ const EditModal = ({ open, channelId, onCancel, onOk, groupOptions, isTag }) => 
                   <FormHelperText id="helper-tex-channel-models-label"> {customizeT(inputPrompt.models)} </FormHelperText>
                 )}
               </FormControl>
-              <Container
-                sx={{
-                  textAlign: 'right'
-                }}
-              >
-                <ButtonGroup variant="outlined" aria-label="small outlined primary button group">
-                  <Button
-                    disabled={hasTag}
-                    onClick={() => {
-                      setFieldValue('models', basicModels(values.type));
-                    }}
-                  >
-                    {t('channel_edit.inputChannelModel')}
-                  </Button>
-                  <Button
-                    disabled={hasTag}
-                    onClick={() => {
-                      setFieldValue('models', modelOptions);
-                    }}
-                  >
-                    {t('channel_edit.inputAllModel')}
-                  </Button>
-                  {inputLabel.provider_models_list && (
-                    <Tooltip title={customizeT(inputPrompt.provider_models_list)} placement="top">
-                      <LoadingButton
-                        loading={providerModelsLoad}
-                        disabled={hasTag}
-                        onClick={() => {
-                          getProviderModels(values, setFieldValue);
-                        }}
-                      >
-                        {customizeT(inputLabel.provider_models_list)}
-                      </LoadingButton>
-                    </Tooltip>
-                  )}
-                </ButtonGroup>
-              </Container>
+              {!inputLabel.general_proxy && (
+                <Container
+                  sx={{
+                    textAlign: 'right'
+                  }}
+                >
+                  <ButtonGroup variant="outlined" aria-label="small outlined primary button group">
+                    <Button
+                      disabled={hasTag}
+                      onClick={() => {
+                        setFieldValue('models', basicModels(values.type));
+                      }}
+                    >
+                      {t('channel_edit.inputChannelModel')}
+                    </Button>
+                    <Button
+                      disabled={hasTag}
+                      onClick={() => {
+                        setFieldValue('models', modelOptions);
+                      }}
+                    >
+                      {t('channel_edit.inputAllModel')}
+                    </Button>
+                    {inputLabel.provider_models_list && (
+                      <Tooltip title={customizeT(inputPrompt.provider_models_list)} placement="top">
+                        <LoadingButton
+                          loading={providerModelsLoad}
+                          disabled={hasTag}
+                          onClick={() => {
+                            getProviderModels(values, setFieldValue);
+                          }}
+                        >
+                          {customizeT(inputLabel.provider_models_list)}
+                        </LoadingButton>
+                      </Tooltip>
+                    )}
+                  </ButtonGroup>
+                </Container>
+              )}
+
               {!isTag && (
                 <FormControl fullWidth error={Boolean(touched.key && errors.key)} sx={{ ...theme.typography.otherInput }}>
                   {!batchAdd ? (
@@ -678,11 +685,12 @@ const EditModal = ({ open, channelId, onCancel, onOk, groupOptions, isTag }) => 
                     </FormHelperText>
                   ) : (
                     <FormHelperText id="helper-tex-channel-key-label"> {customizeT(inputPrompt.key)} </FormHelperText>
+                    // <FormHelperText id="helper-tex-channel-key-label"> {universalType ? customizeT(inputPrompt.universal_tips) : customizeT(inputPrompt.key)} </FormHelperText>
                   )}
                 </FormControl>
               )}
 
-              {inputPrompt.model_mapping && (
+              {!inputLabel.general_proxy && inputPrompt.model_mapping && (
                 <FormControl
                   fullWidth
                   error={Boolean(touched.model_mapping && errors.model_mapping)}
@@ -711,29 +719,32 @@ const EditModal = ({ open, channelId, onCancel, onOk, groupOptions, isTag }) => 
                   )}
                 </FormControl>
               )}
-              <FormControl fullWidth error={Boolean(touched.proxy && errors.proxy)} sx={{ ...theme.typography.otherInput }}>
-                <InputLabel htmlFor="channel-proxy-label">{customizeT(inputLabel.proxy)}</InputLabel>
-                <OutlinedInput
-                  id="channel-proxy-label"
-                  label={customizeT(inputLabel.proxy)}
-                  disabled={hasTag}
-                  type="text"
-                  value={values.proxy}
-                  name="proxy"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  inputProps={{}}
-                  aria-describedby="helper-text-channel-proxy-label"
-                />
-                {touched.proxy && errors.proxy ? (
-                  <FormHelperText error id="helper-tex-channel-proxy-label">
-                    {errors.proxy}
-                  </FormHelperText>
-                ) : (
-                  <FormHelperText id="helper-tex-channel-proxy-label"> {customizeT(inputPrompt.proxy)} </FormHelperText>
-                )}
-              </FormControl>
-              {inputPrompt.test_model && (
+              {!inputLabel.general_proxy && (
+                <FormControl fullWidth error={Boolean(touched.proxy && errors.proxy)} sx={{ ...theme.typography.otherInput }}>
+                  <InputLabel htmlFor="channel-proxy-label">{customizeT(inputLabel.proxy)}</InputLabel>
+                  <OutlinedInput
+                    id="channel-proxy-label"
+                    label={customizeT(inputLabel.proxy)}
+                    disabled={hasTag}
+                    type="text"
+                    value={values.proxy}
+                    name="proxy"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    inputProps={{}}
+                    aria-describedby="helper-text-channel-proxy-label"
+                  />
+                  {touched.proxy && errors.proxy ? (
+                    <FormHelperText error id="helper-tex-channel-proxy-label">
+                      {errors.proxy}
+                    </FormHelperText>
+                  ) : (
+                    <FormHelperText id="helper-tex-channel-proxy-label"> {customizeT(inputPrompt.proxy)} </FormHelperText>
+                  )}
+                </FormControl>
+              )}
+
+              {!inputLabel.general_proxy && inputPrompt.test_model && (
                 <FormControl fullWidth error={Boolean(touched.test_model && errors.test_model)} sx={{ ...theme.typography.otherInput }}>
                   <InputLabel htmlFor="channel-test_model-label">{customizeT(inputLabel.test_model)}</InputLabel>
                   <OutlinedInput
@@ -758,7 +769,7 @@ const EditModal = ({ open, channelId, onCancel, onOk, groupOptions, isTag }) => 
                 </FormControl>
               )}
 
-              {inputPrompt.pre_cost && (
+              {!inputLabel.general_proxy && inputPrompt.pre_cost && (
                 <FormControl fullWidth error={Boolean(touched.pre_cost && errors.pre_cost)} sx={{ ...theme.typography.otherInput }}>
                   <InputLabel htmlFor="channel-pre_cost-label">{customizeT(inputLabel.pre_cost)}</InputLabel>
                   <Select
@@ -794,7 +805,7 @@ const EditModal = ({ open, channelId, onCancel, onOk, groupOptions, isTag }) => 
                   )}
                 </FormControl>
               )}
-              {inputPrompt.only_chat && (
+              {!inputLabel.general_proxy && inputPrompt.only_chat && (
                 <FormControl fullWidth>
                   <FormControlLabel
                     control={

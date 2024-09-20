@@ -222,6 +222,13 @@ export const CHANNEL_OPTIONS = {
     color: 'default',
     url: 'https://github.com/marketplace/models'
   },
+  50: {
+    key: 50,
+    text: 'GeneralProxy',
+    value: 50,
+    color: 'orange',
+    url: ''
+  },
   8: {
     key: 8,
     text: '自定义渠道',

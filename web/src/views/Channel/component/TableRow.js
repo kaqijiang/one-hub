@@ -172,7 +172,7 @@ export default function ChannelTableRow({ item, manageChannel, handleOpenModal, 
       modelName = item.test_model;
     }
 
-    if (modelName == '') {
+    if (item.type != 50 && modelName == '') {
       showError(t('channel_row.modelTestTip'));
       return;
     }

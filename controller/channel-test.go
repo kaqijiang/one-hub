@@ -95,6 +95,53 @@ func buildTestRequest(modelName string) *types.ChatCompletionRequest {
 	return testRequest
 }
 
+// 通用模式的处理函数
+func testChannelGeneralMode(channel *model.Channel) (error, *types.OpenAIErrorWithStatusCode) {
+	baseURL := channel.BaseURL
+	if baseURL == nil || *baseURL == "" {
+		return errors.New("没有设置baseURL"), nil
+	}
+
+	targetURL := *baseURL
+
+	// 创建HTTP请求
+	req, err := http.NewRequest("GET", targetURL, nil)
+	if err != nil {
+		return err, nil
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// 如果 channel 中有 key，则添加到请求头中作为 Authorization
+	if channel.Key != "" {
+		authHeader := fmt.Sprintf("Bearer %s", channel.Key)
+		req.Header.Set("Authorization", authHeader)
+	}
+
+	// 发起请求
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err, nil
+	}
+	defer resp.Body.Close()
+
+	// 检查响应的状态码
+	if resp.StatusCode != http.StatusOK {
+		errMsg := fmt.Sprintf("API请求失败，状态码：%d", resp.StatusCode)
+		openaiError := &types.OpenAIErrorWithStatusCode{
+			OpenAIError: types.OpenAIError{
+				Message: errMsg,
+				Type:    "APIError",
+			},
+			StatusCode: resp.StatusCode,
+			LocalError: false,
+		}
+		return errors.New(errMsg), openaiError
+	}
+
+	return nil, nil
+}
+
 func TestChannel(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -112,9 +159,15 @@ func TestChannel(c *gin.Context) {
 		})
 		return
 	}
-	testModel := c.Query("model")
 	tik := time.Now()
-	err, openaiErr := testChannel(channel, testModel)
+
+	var openaiErr *types.OpenAIErrorWithStatusCode
+	if channel.Type == config.ChannelTypeGeneralProxy {
+		err, openaiErr = testChannelGeneralMode(channel)
+	} else {
+		testModel := c.Query("model")
+		err, openaiErr = testChannel(channel, testModel)
+	}
 	tok := time.Now()
 	milliseconds := tok.Sub(tik).Milliseconds()
 	consumedTime := float64(milliseconds) / 1000.0
@@ -141,6 +194,7 @@ func TestChannel(c *gin.Context) {
 		"message": msg,
 		"time":    consumedTime,
 	})
+
 }
 
 var testAllChannelsLock sync.Mutex
@@ -170,7 +224,15 @@ func testAllChannels(isNotify bool) error {
 			isChannelEnabled := channel.Status == config.ChannelStatusEnabled
 			sendMessage += fmt.Sprintf("**通道 %s - #%d - %s** : \n\n", utils.EscapeMarkdownText(channel.Name), channel.Id, channel.StatusToStr())
 			tik := time.Now()
-			err, openaiErr := testChannel(channel, "")
+			var err error
+			var openaiErr *types.OpenAIErrorWithStatusCode
+
+			if channel.Type == config.ChannelTypeGeneralProxy {
+				err, openaiErr = testChannelGeneralMode(channel)
+			} else {
+				err, openaiErr = testChannel(channel, "")
+			}
+
 			tok := time.Now()
 			milliseconds := tok.Sub(tik).Milliseconds()
 			// 通道为禁用状态，并且还是请求错误 或者 响应时间超过阈值 直接跳过，也不需要更新响应时间。

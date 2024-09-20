@@ -109,12 +109,16 @@ func (q *Quota) completedQuotaConsumption(usage *types.Usage, tokenName string, 
 	if q.inputRatio != 0 && quota <= 0 {
 		quota = 1
 	}
-	totalTokens := promptTokens + completionTokens
-	if totalTokens == 0 {
-		// in this case, must be some error happened
-		// we cannot just return, because we may have to return the pre-consumed quota
-		quota = 0
+	// 确保即使总 token 数为 0，按次数依然消耗配额
+	if q.price.Type != model.TimesPriceType {
+		totalTokens := promptTokens + completionTokens
+		if totalTokens == 0 {
+			// in this case, must be some error happened
+			// we cannot just return, because we may have to return the pre-consumed quota
+			quota = 0
+		}
 	}
+
 	quotaDelta := quota - q.preConsumedQuota
 	err := model.PostConsumeTokenQuota(q.tokenId, quotaDelta)
 	if err != nil {

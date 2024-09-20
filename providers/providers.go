@@ -16,6 +16,7 @@ import (
 	"one-api/providers/coze"
 	"one-api/providers/deepseek"
 	"one-api/providers/gemini"
+	"one-api/providers/generalproxy"
 	"one-api/providers/github"
 	"one-api/providers/groq"
 	"one-api/providers/hunyuan"
@@ -81,6 +82,7 @@ func init() {
 		config.ChannelTypeSiliconflow:  siliconflow.SiliconflowProviderFactory{},
 		config.ChannelTypeJina:         jina.JinaProviderFactory{},
 		config.ChannelTypeGithub:       github.GithubProviderFactory{},
+		config.ChannelTypeGeneralProxy: generalproxy.GeneralProxyProviderFactory{},
 	}
 }
 
