@@ -39,12 +39,13 @@ func GeneralProxyRelay(c *gin.Context) {
 	// 进行请求和重试逻辑
 	for attempt := 0; attempt <= retryTimes; attempt++ {
 		// 获取提供者和模型名称
-		provider, _, err := GetProvider(c, modelName)
+		provider, updatedModelName, err := GetProvider(c, modelName)
 		if err != nil || provider == nil {
 			lastError = err
 			logger.LogError(c.Request.Context(), fmt.Sprintf("获取提供者失败，正在重试..."))
-			continue // 如果获取提供者失败，则继续重试
+			continue
 		}
+		modelName = updatedModelName
 
 		// 冻结通道
 		channel := provider.GetChannel()
