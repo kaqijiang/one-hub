@@ -1,9 +1,9 @@
 version: "3.4"
 
 services:
-  one-hub:
-    image: martialbe/one-api:latest
-    container_name: one-hub
+  omini-api:
+    image: registry.cn-hangzhou.aliyuncs.com/omini/ominiapi:latest
+    container_name: omini-api
     restart: always
     command: --log-dir /app/logs
     ports:
@@ -12,13 +12,13 @@ services:
       - ./data/oneapi:/data
       - ./logs:/app/logs
     environment:
-      - SQL_DSN=oneapi:123456@tcp(db:3306)/one-api # 修改此行，或注释掉以使用 SQLite 作为数据库
+      - SQL_DSN=oneapi:123456@tcp(db:3306)/one-api # 根据需要修改，或注释掉以使用 SQLite 作为数据库
       - REDIS_CONN_STRING=redis://redis
-      - SESSION_SECRET=random_string # 修改为随机字符串
+      - SESSION_SECRET=your_random_secret # 请替换为随机字符串
       - TZ=Asia/Shanghai
-    #      - NODE_TYPE=slave  # 多机部署时从节点取消注释该行
+    #      - NODE_TYPE=slave  # 如果是多机部署，从节点取消注释该行
     #      - SYNC_FREQUENCY=60  # 需要定期从数据库加载数据时取消注释该行
-    #      - FRONTEND_BASE_URL=https://openai.justsong.cn  # 多机部署时从节点取消注释该行
+    #      - FRONTEND_BASE_URL=https://yourdomain.com  # 多机部署时从节点取消注释该行
     depends_on:
       - redis
       - db
