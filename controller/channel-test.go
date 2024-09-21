@@ -95,6 +95,27 @@ func buildTestRequest(modelName string) *types.ChatCompletionRequest {
 	return testRequest
 }
 
+// 根据 JSON 字符串动态设置 HTTP 请求头
+func AddHeadersFromJSON(req *http.Request, jsonStr string) error {
+	if jsonStr == "" {
+		return nil
+	}
+
+	// 使用 map[string]string 来解析 JSON，存储键值对
+	headers := make(map[string]string)
+	err := json.Unmarshal([]byte(jsonStr), &headers)
+	if err != nil {
+		return fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	// 遍历解析出的键值对，设置到 HTTP 请求头中
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
+
+	return nil
+}
+
 // 通用模式的处理函数
 func testChannelGeneralMode(channel *model.Channel) (error, *types.OpenAIErrorWithStatusCode) {
 	baseURL := channel.BaseURL
@@ -111,10 +132,12 @@ func testChannelGeneralMode(channel *model.Channel) (error, *types.OpenAIErrorWi
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	// 如果 channel 中有 key，则添加到请求头中作为 Authorization
+	// 如果 channel 中有 key，则添加到请求头中
 	if channel.Key != "" {
-		authHeader := fmt.Sprintf("Bearer %s", channel.Key)
-		req.Header.Set("Authorization", authHeader)
+		err := AddHeadersFromJSON(req, channel.Key)
+		if err != nil {
+			return fmt.Errorf("Error setting headers: %w", err), nil
+		}
 	}
 
 	// 发起请求

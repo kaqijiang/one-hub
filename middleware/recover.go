@@ -15,7 +15,7 @@ func RelayPanicRecover() gin.HandlerFunc {
 			if err := recover(); err != nil {
 				errorResponse := gin.H{
 					"error": gin.H{
-						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/MartialBE/one-hub", err),
+						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie", err),
 						"type":    "one_hub_panic",
 					},
 				}
@@ -35,7 +35,7 @@ func RelayCluadePanicRecover() gin.HandlerFunc {
 					"type": "one_hub_panic",
 					"error": gin.H{
 						"type":    "one_hub_panic",
-						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/MartialBE/one-hub.", err),
+						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie.", err),
 					},
 				}
 				handlePanic(c, err, errorResponse)
@@ -53,7 +53,7 @@ func RelayGeminiPanicRecover() gin.HandlerFunc {
 					"error": gin.H{
 						"code":    500,
 						"status":  "one_hub_panic",
-						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/MartialBE/one-hub.", err),
+						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie.", err),
 					},
 				}
 				handlePanic(c, err, errorResponse)
@@ -69,7 +69,7 @@ func RelayMJPanicRecover() gin.HandlerFunc {
 			if err := recover(); err != nil {
 				errorResponse := gin.H{
 					"error": gin.H{
-						"description": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/MartialBE/one-hub.", err),
+						"description": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie.", err),
 						"type":        "one_hub_panic",
 						"code":        500,
 					},
@@ -88,7 +88,7 @@ func RelaySunoPanicRecover() gin.HandlerFunc {
 			if err := recover(); err != nil {
 				errorResponse := gin.H{
 					"code":    "one_hub_panic",
-					"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/MartialBE/one-hub.", err),
+					"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie.", err),
 				}
 				handlePanic(c, err, errorResponse)
 			}

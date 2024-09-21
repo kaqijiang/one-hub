@@ -20,13 +20,13 @@ const Footer = () => {
             <Link href="https://github.com/MartialBE/one-hub" target="_blank">
               {siteInfo.system_name} {process.env.REACT_APP_VERSION}{' '}
             </Link>
-            {t('footer.developedBy')}{' '}
+            {/* {t('footer.developedBy')}{' '} */}
+            {/* <Link href="https://github.com/MartialBE" target="_blank">
+              MartialBE
+            </Link> */}
+            ，{t('footer.basedOn')}{' '}
             <Link href="https://github.com/MartialBE" target="_blank">
               MartialBE
-            </Link>
-            ，{t('footer.basedOn')}{' '}
-            <Link href="https://github.com/songquanpeng" target="_blank">
-              JustSong
             </Link>{' '}
             One Hub，{t('footer.sourceCode')}
             <Link href="https://opensource.org/licenses/mit-license.php"> {t('footer.license')}</Link>

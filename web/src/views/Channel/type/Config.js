@@ -470,7 +470,7 @@ const typeConfig = {
   50: {
     inputLabel: {
       general_proxy: true,
-      key: 'Authorized需要的参数'
+      key: 'header参数'
     },
     input: {
       models: ['general-proxy'],
@@ -479,7 +479,7 @@ const typeConfig = {
     prompt: {
       base_url: '必填，请输入目标API地址，例如通过cloudflare中转',
       models: '通用代理渠道model，用来区分不同的渠道API地址',
-      key: '(选填)header头中Authorized需要的的参数'
+      key: '(选填)header头中的参数Json格式,例如{"Authorization": "xxxxx"}'
     },
     modelGroup: 'GeneralProxy'
   }

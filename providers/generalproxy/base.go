@@ -1,7 +1,8 @@
 package generalproxy
 
 import (
-	"fmt"
+	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"one-api/common/requester"
 	"one-api/model"
@@ -42,23 +43,36 @@ func requestErrorHandle(resp *http.Response) *types.OpenAIError {
 	}
 }
 
-// 获取请求头
 func (p *GeneralProxyProvider) GetRequestHeaders() map[string]string {
 	headers := make(map[string]string)
-	// 仅在 Key 存在时设置 Authorization
+
+	// 如果 Key 存在且是 JSON 字符串，解析它
 	if p.Channel.Key != "" {
-		headers["Authorization"] = fmt.Sprintf("Bearer %s", p.Channel.Key)
+		var parsedHeaders map[string]string
+		// 解析 JSON，不再返回错误
+		json.Unmarshal([]byte(p.Channel.Key), &parsedHeaders)
+
+		// 将解析后的键值对添加到 headers 中
+		for key, value := range parsedHeaders {
+			headers[key] = value
+		}
 	}
+
 	return headers
 }
 
 // 获取完整的请求 URL
-func (p *GeneralProxyProvider) GetFullRequestURL(requestURL string, _ string) string {
+func (p *GeneralProxyProvider) GetFullRequestURL(c *gin.Context) string {
 	baseURL := strings.TrimSuffix(p.Channel.GetBaseURL(), "/")
 	// 剔除 /generalProxy
-	proxiedPath := strings.TrimPrefix(requestURL, "/generalProxy")
+	proxiedPath := strings.TrimPrefix(c.Request.URL.Path, "/generalProxy")
 	if !strings.HasPrefix(proxiedPath, "/") {
 		proxiedPath = "/" + proxiedPath
 	}
-	return baseURL + proxiedPath
+	// 组合完整的 URL，包括查询参数
+	fullURL := baseURL + proxiedPath
+	if c.Request.URL.RawQuery != "" {
+		fullURL += "?" + c.Request.URL.RawQuery
+	}
+	return fullURL
 }

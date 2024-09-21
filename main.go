@@ -43,7 +43,7 @@ func main() {
 	}
 
 	logger.SetupLogger()
-	logger.SysLog("One Hub " + config.Version + " started")
+	logger.SysLog("OMINI API " + config.Version + " started")
 	// Initialize SQL Database
 	model.SetupDB()
 	defer model.CloseDB()

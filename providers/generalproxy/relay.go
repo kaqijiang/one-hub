@@ -1,6 +1,9 @@
 package generalproxy
 
 import (
+	"bytes"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"one-api/common"
 	"one-api/types"
@@ -10,23 +13,37 @@ import (
 
 func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxyResponse, *types.OpenAIErrorWithStatusCode) {
 	// 根据 channel 配置构建完整的请求 URL
-	fullURL := p.GetFullRequestURL(c.Request.URL.Path, "")
+	fullURL := p.GetFullRequestURL(c)
 	if fullURL == "" {
 		return nil, common.ErrorWrapperLocal(nil, "invalid_general_proxy_config", http.StatusInternalServerError)
 	}
 
+	// 复制原始请求的 Body
+	var body io.Reader
+	if c.Request.Body != nil {
+		// 读取原始请求的 Body
+		bodyBytes, err := ioutil.ReadAll(c.Request.Body)
+		if err != nil {
+			return nil, common.ErrorWrapperLocal(err, "read_request_body_error", http.StatusInternalServerError)
+		}
+		// 创建一个新的 ReadCloser，以便后续处理
+		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		body = bytes.NewReader(bodyBytes)
+	}
+
 	// 创建新的请求
-	req, err := http.NewRequest(c.Request.Method, fullURL, c.Request.Body)
+	req, err := http.NewRequest(c.Request.Method, fullURL, body)
 	if err != nil {
 		return nil, common.ErrorWrapperLocal(err, "request_creation_error", http.StatusInternalServerError)
 	}
-	defer req.Body.Close()
 
 	// 设置请求头
 	req.Header = c.Request.Header.Clone()
-	// 移除 X-API-Model 请求头
 	req.Header.Del("X-API-Model")
-	for k, v := range p.GetRequestHeaders() {
+
+	// 获取并设置 GeneralProxyProvider 中的请求头
+	headers := p.GetRequestHeaders()
+	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
 

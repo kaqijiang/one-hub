@@ -5,7 +5,7 @@ import { CHAT_LINKS } from 'constants/chatLinks';
 
 export function getSystemName() {
   let system_name = localStorage.getItem('system_name');
-  if (!system_name) return 'One Hub';
+  if (!system_name) return 'OMINI API';
   return system_name;
 }
 

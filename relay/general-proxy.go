@@ -26,8 +26,8 @@ func GeneralProxyRelay(c *gin.Context) {
 	}
 
 	var lastError error
-	// 获取重试次数，允许重试为0次
-	retryTimes := 3
+
+	retryTimes := config.RetryTimes
 
 	// 创建配额，基于每次请求消耗1次配额
 	quota, errors := relay_util.NewQuota(c, modelName, 1)
@@ -47,8 +47,8 @@ func GeneralProxyRelay(c *gin.Context) {
 		}
 		modelName = updatedModelName
 
-		// 冻结通道
 		channel := provider.GetChannel()
+		// 冻结通道
 		model.ChannelGroup.Cooldowns(channel.Id)
 
 		// 处理单次代理请求
