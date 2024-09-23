@@ -16,7 +16,7 @@ func RelayPanicRecover() gin.HandlerFunc {
 				errorResponse := gin.H{
 					"error": gin.H{
 						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie", err),
-						"type":    "one_hub_panic",
+						"type":    "omini_api_panic",
 					},
 				}
 				handlePanic(c, err, errorResponse)
@@ -32,9 +32,9 @@ func RelayCluadePanicRecover() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				errorResponse := gin.H{
-					"type": "one_hub_panic",
+					"type": "omini_api_panic",
 					"error": gin.H{
-						"type":    "one_hub_panic",
+						"type":    "omini_api_panic",
 						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie.", err),
 					},
 				}
@@ -52,7 +52,7 @@ func RelayGeminiPanicRecover() gin.HandlerFunc {
 				errorResponse := gin.H{
 					"error": gin.H{
 						"code":    500,
-						"status":  "one_hub_panic",
+						"status":  "omini_api_panic",
 						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie.", err),
 					},
 				}
@@ -70,7 +70,7 @@ func RelayMJPanicRecover() gin.HandlerFunc {
 				errorResponse := gin.H{
 					"error": gin.H{
 						"description": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie.", err),
-						"type":        "one_hub_panic",
+						"type":        "omini_api_panic",
 						"code":        500,
 					},
 				}
@@ -87,7 +87,7 @@ func RelaySunoPanicRecover() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				errorResponse := gin.H{
-					"code":    "one_hub_panic",
+					"code":    "omini_api_panic",
 					"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://bento.me/aijie.", err),
 				}
 				handlePanic(c, err, errorResponse)
