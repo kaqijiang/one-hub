@@ -473,13 +473,13 @@ const typeConfig = {
       key: 'header参数'
     },
     input: {
-      models: ['general-proxy'],
+      models: ['general-proxy', 'semanti', 'zotero'],
       key: ''
     },
     prompt: {
       base_url: '必填，请输入目标API地址，例如通过cloudflare中转',
       models: '通用代理渠道model，用来区分不同的渠道API地址',
-      key: '(选填)header头中的参数Json格式,例如{"Authorization": "xxxxx"}'
+      key: '(选填)header头中的参数Json格式,例如{"Authorization": "xxxxx"} 因为平台需要Authorization认证，所以如果你请求目标也需要Authorization的话，修改为Auth-proxy 例如{"Auth-proxy": "xxxxx"}'
     },
     modelGroup: 'GeneralProxy'
   }

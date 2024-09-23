@@ -39,7 +39,17 @@ func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxy
 
 	// 设置请求头
 	req.Header = c.Request.Header.Clone()
-	req.Header.Del("X-API-Model")
+	// 删除 多余 header
+	req.Header.Del("OMINI-API-Model")
+	req.Header.Del("Authorization")
+
+	// 如果存在 Auth-proxy 头部
+	if authProxy := req.Header.Get("Auth-proxy"); authProxy != "" {
+		// 删除 Auth-proxy 头部
+		req.Header.Del("Auth-proxy")
+		// 将 Auth-proxy 的值设置为新的 Authorization 头部
+		req.Header.Set("Authorization", authProxy)
+	}
 
 	// 获取并设置 GeneralProxyProvider 中的请求头
 	headers := p.GetRequestHeaders()

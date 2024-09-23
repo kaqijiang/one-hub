@@ -19,7 +19,7 @@ import (
 // GeneralProxyRelay 处理代理请求并支持重试逻辑
 func GeneralProxyRelay(c *gin.Context) {
 	// 获取模型名称
-	modelName := c.Request.Header.Get("X-API-Model")
+	modelName := c.Request.Header.Get("OMINI-API-Model")
 	if modelName == "" {
 		common.AbortWithMessage(c, http.StatusBadRequest, "缺少模型名称")
 		return
