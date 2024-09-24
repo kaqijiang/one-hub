@@ -1029,25 +1029,25 @@
     "output": 1.60
     },
     {
-    "model": "llava-v1.5-7b-4096-preview",
-    "type": "times",
-    "channel_type": 31,
-    "input": 5,
-    "output": 5
-    },
-    {
     "model": "distil-whisper-large-v3-en",
-    "type": "times",
+    "type": "tokens",
     "channel_type": 31,
-    "input": 5,
-    "output": 5
+    "input": 0.03,
+    "output": 1.60
     },
     {
     "model": "whisper-large-v3",
+    "type": "tokens",
+    "channel_type": 31,
+    "input": 0.03,
+    "output": 1.60
+    },
+    {
+    "model": "llava-v1.5-7b-4096-preview",
     "type": "times",
     "channel_type": 31,
-    "input": 5,
-    "output": 5
+    "input": 3,
+    "output": 3
     },
     {
     "model": "zotero",
