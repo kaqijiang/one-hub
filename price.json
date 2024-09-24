@@ -1036,6 +1036,20 @@
     "output": 50
     },
     {
+    "model": "distil-whisper-large-v3-en",
+    "type": "times",
+    "channel_type": 31,
+    "input": 50,
+    "output": 50
+    },
+    {
+    "model": "whisper-large-v3",
+    "type": "times",
+    "channel_type": 31,
+    "input": 50,
+    "output": 50
+    },
+    {
     "model": "zotero",
     "type": "times",
     "channel_type": 50,
