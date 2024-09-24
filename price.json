@@ -1032,43 +1032,43 @@
     "model": "llava-v1.5-7b-4096-preview",
     "type": "times",
     "channel_type": 31,
-    "input": 50,
-    "output": 50
+    "input": 5,
+    "output": 5
     },
     {
     "model": "distil-whisper-large-v3-en",
     "type": "times",
     "channel_type": 31,
-    "input": 50,
-    "output": 50
+    "input": 5,
+    "output": 5
     },
     {
     "model": "whisper-large-v3",
     "type": "times",
     "channel_type": 31,
-    "input": 50,
-    "output": 50
+    "input": 5,
+    "output": 5
     },
     {
     "model": "zotero",
     "type": "times",
     "channel_type": 50,
-    "input": 150,
-    "output": 150
+    "input": 15,
+    "output": 15
     },
     {
     "model": "semantic",
     "type": "times",
     "channel_type": 50,
-    "input": 150,
-    "output": 150
+    "input": 15,
+    "output": 15
     },
     {
     "model": "general-proxy",
     "type": "times",
     "channel_type": 50,
-    "input": 150,
-    "output": 150
+    "input": 15,
+    "output": 15
     },
     {
     "model": "yi-34b-chat-0205",
