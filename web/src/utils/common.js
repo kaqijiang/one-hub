@@ -5,7 +5,7 @@ import { CHAT_LINKS } from 'constants/chatLinks';
 
 export function getSystemName() {
   let system_name = localStorage.getItem('system_name');
-  if (!system_name) return 'OMINI API';
+  if (!system_name) return 'OMINI API：获取Semantic Scholar API（S2/语义学者API）与gemma2、LLama系列模型（3.1/3.2）的API Key';
   return system_name;
 }
 
