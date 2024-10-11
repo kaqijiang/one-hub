@@ -29,13 +29,6 @@ func GeneralProxyRelay(c *gin.Context) {
 
 	retryTimes := config.RetryTimes
 
-	// 创建配额，基于每次请求消耗1次配额
-	quota, errors := relay_util.NewQuota(c, modelName, 1)
-	if errors != nil {
-		common.AbortWithMessage(c, http.StatusForbidden, "请求额度已用尽")
-		return
-	}
-
 	// 进行请求和重试逻辑
 	for attempt := 0; attempt <= retryTimes; attempt++ {
 		// 获取提供者和模型名称
@@ -45,6 +38,14 @@ func GeneralProxyRelay(c *gin.Context) {
 			logger.LogError(c.Request.Context(), fmt.Sprintf("获取提供者失败，正在重试..."))
 			continue
 		}
+
+		// 创建配额，基于每次请求消耗1次配额
+		quota, errors := relay_util.NewQuota(c, modelName, 1000)
+		if errors != nil {
+			common.AbortWithMessage(c, http.StatusForbidden, "请求额度已用尽、请充值令牌")
+			return
+		}
+
 		modelName = updatedModelName
 
 		channel := provider.GetChannel()
@@ -96,8 +97,8 @@ func processProxyRequest(c *gin.Context, provider providersBase.ProviderInterfac
 
 		// 消耗配额
 		usage := &types.Usage{
-			PromptTokens:     0,
-			CompletionTokens: 0,
+			PromptTokens:     10000,
+			CompletionTokens: 10000,
 		}
 		quota.Consume(c, usage)
 
