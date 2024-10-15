@@ -2,11 +2,13 @@ package generalproxy
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"one-api/common"
 	"one-api/types"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +19,15 @@ func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxy
 	if fullURL == "" {
 		return nil, common.ErrorWrapperLocal(nil, "invalid_general_proxy_config", http.StatusInternalServerError)
 	}
+	// 获取模型
+	modelName := c.Request.Header.Get("OMINI-API-Model")
+
+	// 删除多余 header
+	c.Request.Header.Del("OMINI-API-Model")
+	c.Request.Header.Del("Authorization")
+
+	// 获取并设置 GeneralProxyProvider 中的请求头
+	headers := p.GetRequestHeaders()
 
 	// 复制原始请求的 Body
 	var body io.Reader
@@ -28,7 +39,61 @@ func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxy
 		}
 		// 创建一个新的 ReadCloser，以便后续处理
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-		body = bytes.NewReader(bodyBytes)
+
+		// 如果 modelName 以 "capcha" 开头，则修改 JSON body
+		if strings.HasPrefix(strings.ToLower(modelName), "capcha") {
+
+			// 解析 body 为 JSON 对象
+			var jsonBody map[string]interface{}
+			if err := json.Unmarshal(bodyBytes, &jsonBody); err != nil {
+				return nil, common.ErrorWrapperLocal(err, "invalid_json_format", http.StatusBadRequest)
+			}
+
+			// 获取并删除指定的 appId 和 clientKey
+			appId := headers["appId"]
+			if _, exists := headers["appId"]; exists {
+				delete(headers, "appId")
+			}
+
+			clientKey := headers["clientKey"]
+			if _, exists := headers["clientKey"]; exists {
+				delete(headers, "clientKey")
+			}
+
+			// 增加新的字段
+			jsonBody["appId"] = appId
+			jsonBody["clientKey"] = clientKey
+
+			// 类型转换
+			switch modelName {
+			case "CapchaTurnstileTask":
+				jsonBody["type"] = "AntiTurnstileTaskProxyLess"
+			case "CapchaHCaptchaEnterpriseTask":
+				jsonBody["type"] = "HCaptchaEnterpriseTaskProxyLess"
+			case "CapchaReCaptchaV2Task":
+				jsonBody["type"] = "ReCaptchaV2TaskProxyLess"
+			case "CapchaReCaptchaV3Task":
+				jsonBody["type"] = "ReCaptchaV3TaskProxyLess"
+			case "CapchaReCaptchaV2EnterpriseTask":
+				jsonBody["type"] = "ReCaptchaV2EnterpriseTaskProxyLess"
+			case "CapchaReCaptchaV3EnterpriseTask":
+				jsonBody["type"] = "ReCaptchaV3EnterpriseTaskProxyLess"
+			case "CapchaGeeTestTask":
+				jsonBody["type"] = "GeeTestTaskProxyLess"
+			}
+
+			// 重新将 JSON 对象编码回字节
+			modifiedBodyBytes, err := json.Marshal(jsonBody)
+			if err != nil {
+				return nil, common.ErrorWrapperLocal(err, "json_encoding_error", http.StatusInternalServerError)
+			}
+
+			// 设置修改后的 body
+			body = bytes.NewReader(modifiedBodyBytes)
+		} else {
+			// 不做修改，使用原始的 body
+			body = bytes.NewReader(bodyBytes)
+		}
 	}
 
 	// 创建新的请求
@@ -39,9 +104,6 @@ func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxy
 
 	// 设置请求头
 	req.Header = c.Request.Header.Clone()
-	// 删除 多余 header
-	req.Header.Del("OMINI-API-Model")
-	req.Header.Del("Authorization")
 
 	// 如果存在 Auth-proxy 头部
 	if authProxy := req.Header.Get("Auth-proxy"); authProxy != "" {
@@ -51,8 +113,6 @@ func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxy
 		req.Header.Set("Authorization", authProxy)
 	}
 
-	// 获取并设置 GeneralProxyProvider 中的请求头
-	headers := p.GetRequestHeaders()
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
@@ -63,7 +123,6 @@ func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxy
 		// 请求成功
 		usage := p.calculateUsage(c, resp)
 		p.SetUsage(usage)
-
 		proxyResponse := &types.GeneralProxyResponse{
 			Response: resp,
 		}

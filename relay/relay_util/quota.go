@@ -172,6 +172,10 @@ func (q *Quota) Undo(c *gin.Context) {
 
 func (q *Quota) Consume(c *gin.Context, usage *types.Usage) {
 	tokenName := c.GetString("token_name")
+
+	if c.Request.URL.Path == "/generalProxy/getTaskResult" {
+		q.inputRatio = 0 // 修改为0
+	}
 	// 如果没有报错，则消费配额
 	go func(ctx context.Context) {
 		err := q.completedQuotaConsumption(usage, tokenName, ctx)

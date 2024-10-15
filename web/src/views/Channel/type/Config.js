@@ -473,7 +473,7 @@ const typeConfig = {
       key: 'header参数'
     },
     input: {
-      models: ['general-proxy', 'semanti', 'zotero'],
+      models: ['general', 'semanti', 'zotero', 'CapchaTurnstileTask', 'CapchaHCaptchaEnterpriseTask', 'CapchaReCaptchaV2Task', 'CapchaReCaptchaV3Task', 'CapchaReCaptchaV2EnterpriseTask', 'CapchaReCaptchaV3EnterpriseTask', 'CapchaGeeTestTask'],
       key: ''
     },
     prompt: {

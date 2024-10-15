@@ -16,7 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GeneralProxyRelay 处理代理请求并支持重试逻辑
+// 处理代理请求并支持重试逻辑
 func GeneralProxyRelay(c *gin.Context) {
 	// 获取模型名称
 	modelName := c.Request.Header.Get("OMINI-API-Model")
@@ -40,7 +40,7 @@ func GeneralProxyRelay(c *gin.Context) {
 		}
 
 		// 创建配额，基于每次请求消耗1次配额
-		quota, errors := relay_util.NewQuota(c, modelName, 1000)
+		quota, errors := relay_util.NewQuota(c, modelName, 100)
 		if errors != nil {
 			common.AbortWithMessage(c, http.StatusForbidden, "请求额度已用尽、请充值令牌")
 			return
@@ -77,7 +77,7 @@ func GeneralProxyRelay(c *gin.Context) {
 	common.AbortWithMessage(c, http.StatusBadGateway, lastError.Error())
 }
 
-// processProxyRequest 处理单次代理请求
+// 处理单次代理请求
 func processProxyRequest(c *gin.Context, provider providersBase.ProviderInterface, quota *relay_util.Quota) (*types.OpenAIErrorWithStatusCode, bool) {
 	// 转换提供者为 GeneralProxyProvider
 	gpProvider, ok := provider.(*generalproxy.GeneralProxyProvider)
@@ -97,9 +97,10 @@ func processProxyRequest(c *gin.Context, provider providersBase.ProviderInterfac
 
 		// 消耗配额
 		usage := &types.Usage{
-			PromptTokens:     10000,
-			CompletionTokens: 10000,
+			PromptTokens:     500,
+			CompletionTokens: 500,
 		}
+
 		quota.Consume(c, usage)
 
 		// 将响应复制回客户端
@@ -108,6 +109,11 @@ func processProxyRequest(c *gin.Context, provider providersBase.ProviderInterfac
 		}
 		c.Writer.WriteHeader(proxyResponse.Response.StatusCode)
 		io.Copy(c.Writer, proxyResponse.Response.Body)
+
+		//// 如果请求的是获取结果，回退配额
+		//if proxyResponse.Response.Request.URL.Host == "api.capsolver.com" && proxyResponse.Response.Request.URL.Path == "/getTaskResult" {
+		//	quota.Undo(c)
+		//}
 		return nil, true
 	}
 

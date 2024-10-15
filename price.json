@@ -1099,7 +1099,7 @@
     "output": 7.5
   },
   {
-    "model": "general-proxy",
+    "model": "general",
     "type": "times",
     "channel_type": 50,
     "input": 7.5,

@@ -379,7 +379,7 @@ func GetDefaultPrice() []*Price {
 	}
 
 	var DefaultGeneralProxyPrice = map[string]float64{
-		"general-proxy": 50,
+		"general": 50,
 	}
 	for model, generalProxyPrice := range DefaultGeneralProxyPrice {
 		prices = append(prices, &Price{
