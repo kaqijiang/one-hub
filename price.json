@@ -1106,6 +1106,55 @@
     "output": 7.5
   },
   {
+    "model": "CapchaTurnstileTask",
+    "type": "times",
+    "channel_type": 50,
+    "input": 0.7,
+    "output": 0.7
+  },
+  {
+    "model": "CapchaHCaptchaEnterpriseTask",
+    "type": "times",
+    "channel_type": 50,
+    "input": 0.9,
+    "output": 0.9
+  },
+  {
+    "model": "CapchaReCaptchaV2Task",
+    "type": "times",
+    "channel_type": 50,
+    "input": 0.5,
+    "output": 0.5
+  },
+  {
+    "model": "CapchaReCaptchaV3Task",
+    "type": "times",
+    "channel_type": 50,
+    "input": 0.6,
+    "output": 0.6
+  },
+  {
+    "model": "CapchaReCaptchaV2EnterpriseTask",
+    "type": "times",
+    "channel_type": 50,
+    "input": 0.6,
+    "output": 0.6
+  },
+  {
+    "model": "CapchaReCaptchaV3EnterpriseTask",
+    "type": "times",
+    "channel_type": 50,
+    "input": 1.6,
+    "output": 1.6
+  },
+  {
+    "model": "CapchaGeeTestTask",
+    "type": "times",
+    "channel_type": 50,
+    "input": 0.7,
+    "output": 0.7
+  },
+  {
     "model": "yi-34b-chat-0205",
     "type": "tokens",
     "channel_type": 33,
