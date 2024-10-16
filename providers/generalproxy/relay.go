@@ -64,22 +64,28 @@ func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxy
 			jsonBody["appId"] = appId
 			jsonBody["clientKey"] = clientKey
 
-			// 类型转换
-			switch modelName {
-			case "CapchaTurnstileTask":
-				jsonBody["type"] = "AntiTurnstileTaskProxyLess"
-			case "CapchaHCaptchaEnterpriseTask":
-				jsonBody["type"] = "HCaptchaEnterpriseTaskProxyLess"
-			case "CapchaReCaptchaV2Task":
-				jsonBody["type"] = "ReCaptchaV2TaskProxyLess"
-			case "CapchaReCaptchaV3Task":
-				jsonBody["type"] = "ReCaptchaV3TaskProxyLess"
-			case "CapchaReCaptchaV2EnterpriseTask":
-				jsonBody["type"] = "ReCaptchaV2EnterpriseTaskProxyLess"
-			case "CapchaReCaptchaV3EnterpriseTask":
-				jsonBody["type"] = "ReCaptchaV3EnterpriseTaskProxyLess"
-			case "CapchaGeeTestTask":
-				jsonBody["type"] = "GeeTestTaskProxyLess"
+			// 确保 "task" 是一个 map[string]interface{}
+			task, ok := jsonBody["task"].(map[string]interface{})
+			if ok {
+				// 类型转换，确保 "type" 字段在 "task" 内部
+				switch modelName {
+				case "CapchaTurnstileTask":
+					task["type"] = "AntiTurnstileTaskProxyLess"
+				case "CapchaHCaptchaEnterpriseTask":
+					task["type"] = "HCaptchaEnterpriseTaskProxyLess"
+				case "CapchaReCaptchaV2Task":
+					task["type"] = "ReCaptchaV2TaskProxyLess"
+				case "CapchaReCaptchaV3Task":
+					task["type"] = "ReCaptchaV3TaskProxyLess"
+				case "CapchaReCaptchaV2EnterpriseTask":
+					task["type"] = "ReCaptchaV2EnterpriseTaskProxyLess"
+				case "CapchaReCaptchaV3EnterpriseTask":
+					task["type"] = "ReCaptchaV3EnterpriseTaskProxyLess"
+				case "CapchaGeeTestTask":
+					task["type"] = "GeeTestTaskProxyLess"
+				default:
+					return nil, common.ErrorWrapperLocal(err, "OMINI-API-Model is missing or does not match.", http.StatusBadRequest)
+				}
 			}
 
 			// 重新将 JSON 对象编码回字节
