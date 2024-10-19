@@ -83,6 +83,10 @@ func (p *GeneralProxyProvider) RelayRequest(c *gin.Context) (*types.GeneralProxy
 					task["type"] = "ReCaptchaV3EnterpriseTaskProxyLess"
 				case "CapchaGeeTestTask":
 					task["type"] = "GeeTestTaskProxyLess"
+				case "MTCaptchaTask":
+					task["type"] = "MtCaptchaTaskProxyLess"
+				case "AwsWafTask":
+					task["type"] = "AntiAwsWafTaskProxyLess"
 				default:
 					return nil, common.ErrorWrapperLocal(err, "OMINI-API-Model is missing or does not match.", http.StatusBadRequest)
 				}

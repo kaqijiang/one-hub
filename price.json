@@ -1109,50 +1109,64 @@
     "model": "CapchaTurnstileTask",
     "type": "times",
     "channel_type": 50,
-    "input": 0.7,
-    "output": 0.7
+    "input": 1.5,
+    "output": 1
   },
   {
     "model": "CapchaHCaptchaEnterpriseTask",
     "type": "times",
     "channel_type": 50,
     "input": 0.9,
-    "output": 0.9
+    "output": 1
   },
   {
     "model": "CapchaReCaptchaV2Task",
     "type": "times",
     "channel_type": 50,
-    "input": 0.5,
-    "output": 0.5
+    "input": 1,
+    "output": 1
   },
   {
     "model": "CapchaReCaptchaV3Task",
     "type": "times",
     "channel_type": 50,
-    "input": 0.6,
-    "output": 0.6
+    "input": 1,
+    "output": 1
   },
   {
     "model": "CapchaReCaptchaV2EnterpriseTask",
     "type": "times",
     "channel_type": 50,
-    "input": 0.6,
-    "output": 0.6
+    "input": 1,
+    "output": 1
   },
   {
     "model": "CapchaReCaptchaV3EnterpriseTask",
     "type": "times",
     "channel_type": 50,
-    "input": 1.6,
-    "output": 1.6
+    "input": 2,
+    "output": 1
   },
   {
     "model": "CapchaGeeTestTask",
     "type": "times",
     "channel_type": 50,
-    "input": 0.7,
-    "output": 0.7
+    "input": 2,
+    "output": 1
+  },
+  {
+    "model": "MTCaptchaTask",
+    "type": "times",
+    "channel_type": 50,
+    "input": 2,
+    "output": 1
+  },
+  {
+    "model": "AwsWafTask",
+    "type": "times",
+    "channel_type": 50,
+    "input": 2,
+    "output": 1
   },
   {
     "model": "yi-34b-chat-0205",
