@@ -20,7 +20,7 @@ func getLogo() string {
 
 func getSystemName() string {
 	if config.SystemName == "" {
-		return "One Hub"
+		return "OMINI API：获取Semantic Scholar API（S2/语义学者API）与gemma2、LLama系列模型（3.1/3.2）的API Key"
 	}
 
 	return config.SystemName

@@ -17,7 +17,7 @@ const config = {
     quota_per_unit: 500000,
     server_address: '',
     start_time: 0,
-    system_name: 'One Hub',
+    system_name: 'OMINI API：获取Semantic Scholar API（S2/语义学者API）与gemma2、LLama系列模型（3.1/3.2）的API Key',
     top_up_link: '',
     turnstile_check: false,
     turnstile_site_key: '',

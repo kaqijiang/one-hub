@@ -56,6 +56,8 @@ func ShouldDisableChannel(channelType int, err *types.OpenAIErrorWithStatusCode)
 		return true
 	case "billing_not_active":
 		return true
+	case "organization_restricted":
+		return true
 	}
 
 	switch err.Type {
@@ -88,6 +90,9 @@ func ShouldDisableChannel(channelType int, err *types.OpenAIErrorWithStatusCode)
 	}
 
 	if strings.Contains(err.OpenAIError.Message, "Access denied") {
+		return true
+	}
+	if strings.Contains(err.OpenAIError.Message, "Organization has been restricted") {
 		return true
 	}
 	return false

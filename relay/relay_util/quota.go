@@ -135,7 +135,17 @@ func (q *Quota) completedQuotaConsumption(usage *types.Usage, tokenName string, 
 	if quota == 0 {
 		return fmt.Errorf("user_id: %d, channel_id: %d, token_id: %d, quota is 0", q.userId, q.channelId, q.tokenId)
 	}
-
+  promptTokens := usage.PromptTokens
+  completionTokens := usage.CompletionTokens
+  // 确保即使总 token 数为 0，按次数依然消耗配额
+  if q.price.Type != model.TimesPriceType {
+    totalTokens := promptTokens + completionTokens
+    if totalTokens == 0 {
+      // in this case, must be some error happened
+      // we cannot just return, because we may have to return the pre-consumed quota
+      quota = 0
+    }
+  }
 	quotaDelta := quota - q.preConsumedQuota
 	err := model.PostConsumeTokenQuota(q.tokenId, quotaDelta)
 	if err != nil {
@@ -181,6 +191,10 @@ func (q *Quota) Undo(c *gin.Context) {
 
 func (q *Quota) Consume(c *gin.Context, usage *types.Usage, isStream bool) {
 	tokenName := c.GetString("token_name")
+
+	if c.Request.URL.Path == "/generalProxy/getTaskResult" {
+		q.inputRatio = 0 // 修改为0
+	}
 	// 如果没有报错，则消费配额
 	go func(ctx context.Context) {
 		err := q.completedQuotaConsumption(usage, tokenName, isStream, ctx)
